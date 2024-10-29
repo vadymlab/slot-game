@@ -15,6 +15,7 @@ const (
 	postgresHost                  = "postgres-host"           // Database host
 	postgresConnectionMaxLifeTime = "postgres-max-life-time"  // Maximum connection lifetime in milliseconds
 	postgresMaxOpenConnection     = "postgres-max-connection" // Maximum number of open connections
+	postgresSSLMode               = "postgres-ssl-mode"       // SSL connection mode
 )
 
 // GetPostgresConfig creates and returns a PgConfig structure containing PostgreSQL
@@ -36,6 +37,7 @@ func GetPostgresConfig(c *cli.Context) *postgres.PgConfig {
 		Host:                    c.String(postgresHost),
 		ConnectionMaxLifetimeMS: c.Int(postgresConnectionMaxLifeTime),
 		MaxOpenConnections:      c.Int(postgresMaxOpenConnection),
+		SSLMode:                 c.String(postgresSSLMode),
 	}
 }
 
@@ -90,5 +92,11 @@ var DatabaseFlags = []cli.Flag{
 		Value:   true,
 		Usage:   "Enable or disable query logging in PostgreSQL",
 		EnvVars: []string{"POSTGRES_QUERY_LOGGING"},
+	},
+	&cli.StringFlag{
+		Name:    postgresSSLMode,
+		Value:   "disable",
+		Usage:   "Enable or disable SSL connection to PostgreSQL",
+		EnvVars: []string{"POSTGRES_SSL_MODE"},
 	},
 }
