@@ -18,8 +18,8 @@ services:
     depends_on:
       - database
     build:
-      context: .
-      dockerfile: ./database/Dockerfile
+      context: ./database
+      dockerfile: ./Dockerfile
     env_file:
       - .env
 
