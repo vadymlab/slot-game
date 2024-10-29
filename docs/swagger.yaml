@@ -1,0 +1,372 @@
+definitions:
+  request.DepositRequest:
+    properties:
+      amount:
+        description: Transaction amount, required field
+        type: number
+    required:
+    - amount
+    type: object
+  request.LoginRequest:
+    properties:
+      login:
+        description: User's login email, required and must be a valid email format
+        type: string
+      password:
+        description: User's password, required and must be at least 8 characters
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  request.RegisterRequest:
+    properties:
+      login:
+        description: User's login email, required and must be a valid email format
+        type: string
+      password:
+        description: User's password, required and must be at least 8 characters
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  request.SpinRequest:
+    properties:
+      bet_amount:
+        description: Bet amount, required and must be greater than 0
+        type: number
+    required:
+    - bet_amount
+    type: object
+  request.WithdrawRequest:
+    properties:
+      amount:
+        description: Transaction amount, required field
+        type: number
+    required:
+    - amount
+    type: object
+  response.DepositResponse:
+    properties:
+      balance:
+        description: Updated wallet balance after the deposit transaction
+        type: number
+    type: object
+  response.ProfileResponse:
+    properties:
+      balance:
+        description: User's current wallet balance
+        type: number
+      id:
+        description: Unique identifier for the user
+        type: string
+      login:
+        description: User's login name
+        type: string
+    type: object
+  response.RegisterResponse:
+    properties:
+      id:
+        description: Unique identifier for the newly registered user
+        type: string
+      login:
+        description: Login name for the newly registered user
+        type: string
+    type: object
+  response.SpinHistoryResponse:
+    properties:
+      bet_amount:
+        description: The amount the user bet on this spin
+        type: number
+      date:
+        description: The date and time of this spin, formatted as "YYYY-MM-DD HH:MM:SS"
+        type: string
+      win_amount:
+        description: The amount the user won on this spin
+        type: number
+    type: object
+  response.SpinResponse:
+    properties:
+      win_amount:
+        description: The amount the user won on this spin
+        type: number
+    type: object
+  response.WithdrawResponse:
+    properties:
+      balance:
+        description: Updated wallet balance after the withdrawal transaction
+        type: number
+    type: object
+info:
+  contact: {}
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token
+      parameters:
+      - description: Login request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token for authenticated user
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request due to invalid input or incorrect login details
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - User
+  /api/profile:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the profile and balance of the authenticated user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile information
+          schema:
+            $ref: '#/definitions/response.ProfileResponse'
+        "401":
+          description: Unauthorized - user not authenticated
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - User
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Allows a new user to register with their details
+      parameters:
+      - description: Registration request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User registered successfully
+          schema:
+            $ref: '#/definitions/response.RegisterResponse'
+        "400":
+          description: Bad request due to invalid input
+          schema:
+            type: string
+        "409":
+          description: Conflict - user already exists
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - User
+  /api/slot/history:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves the user's spin history, showing past spins with their
+        results
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of past spin results
+          schema:
+            items:
+              $ref: '#/definitions/response.SpinHistoryResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get spin history
+      tags:
+      - Slot
+  /api/slot/spin:
+    post:
+      consumes:
+      - application/json
+      description: Initiates a spin with the specified bet amount and returns the
+        result.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Spin request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.SpinRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spin result with win amount
+          schema:
+            $ref: '#/definitions/response.SpinResponse'
+        "400":
+          description: Bad request due to invalid input or insufficient funds
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Spin the slot machine
+      tags:
+      - Slot
+  /api/status:
+    get:
+      consumes:
+      - application/json
+      description: Returns a simple status message indicating the server is operational
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server status message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Check server status
+      tags:
+      - Status
+  /api/wallet/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to deposit funds into their wallet
+      parameters:
+      - description: JWT Token
+        format: bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Deposit amount
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.DepositRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated wallet balance
+          schema:
+            $ref: '#/definitions/response.DepositResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized - user not authenticated
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Deposit funds into wallet
+      tags:
+      - Wallet
+  /api/wallet/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to withdraw funds from their wallet
+      parameters:
+      - description: JWT Token
+        format: bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Withdraw amount
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.WithdrawRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated wallet balance
+          schema:
+            $ref: '#/definitions/response.WithdrawResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized - user not authenticated
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Withdraw funds from wallet
+      tags:
+      - Wallet
+swagger: "2.0"

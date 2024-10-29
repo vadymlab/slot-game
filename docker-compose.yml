@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:17-alpine3.20
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./volumes/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+  migrations:
+    container_name: migrations
+    depends_on:
+      - database
+    build:
+      context: .
+      dockerfile: ./database/Dockerfile
+    env_file:
+      - .env
+
+  api-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+        - "8000:8000"
+    restart: always
+
