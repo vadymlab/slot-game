@@ -17,7 +17,7 @@ type userService struct {
 	userRepository interfaces.IUserRepository // Repository for managing user data
 }
 
-// GetById retrieves a user by their numeric ID.
+// GetByID retrieves a user by their numeric ID.
 //
 // Parameters:
 //   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -26,16 +26,16 @@ type userService struct {
 // Returns:
 //   - A pointer to a User model if found, or nil if not found.
 //   - An error if the retrieval fails.
-func (s *userService) GetById(ctx context.Context, id uint) (*models.User, error) {
+func (s *userService) GetByID(ctx context.Context, id uint) (*models.User, error) {
 	log.FromContext(ctx).Debug("Get user by id")
-	user, err := s.userRepository.GetById(ctx, id)
+	user, err := s.userRepository.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-// GetByExternalId retrieves a user by their UUID identifier.
+// GetByExternalID retrieves a user by their UUID identifier.
 //
 // Parameters:
 //   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -44,9 +44,9 @@ func (s *userService) GetById(ctx context.Context, id uint) (*models.User, error
 // Returns:
 //   - A pointer to a User model if found, or nil if not found.
 //   - An error if the retrieval fails.
-func (s *userService) GetByExternalId(ctx context.Context, id *uuid.UUID) (*models.User, error) {
+func (s *userService) GetByExternalID(ctx context.Context, id *uuid.UUID) (*models.User, error) {
 	log.FromContext(ctx).Debug("Get user by external id")
-	user, err := s.userRepository.GetByExternalId(ctx, id)
+	user, err := s.userRepository.GetByExternalID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func (s *userService) Register(ctx context.Context, login, password string) (*mo
 // Returns:
 //   - A pointer to the updated balance as a float64.
 //   - An error if the deposit fails or the amount is invalid.
-func (s *userService) Deposit(ctx context.Context, userId *uuid.UUID, amount float64) (*float64, error) {
+func (s *userService) Deposit(ctx context.Context, userID *uuid.UUID, amount float64) (*float64, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
@@ -154,7 +154,7 @@ func (s *userService) Deposit(ctx context.Context, userId *uuid.UUID, amount flo
 		_ = tr.Rollback()
 		return nil, serviceError.ErrInvalidAmount
 	}
-	user, err := s.userRepository.GetByExternalId(ctx, userId)
+	user, err := s.userRepository.GetByExternalID(ctx, userID)
 	if err != nil {
 		_ = tr.Rollback()
 		return nil, err
@@ -179,13 +179,13 @@ func (s *userService) Deposit(ctx context.Context, userId *uuid.UUID, amount flo
 // Returns:
 //   - A pointer to the updated balance as a float64.
 //   - An error if the withdrawal fails or there are insufficient funds.
-func (s *userService) Withdraw(ctx context.Context, userId *uuid.UUID, amount float64) (*float64, error) {
+func (s *userService) Withdraw(ctx context.Context, userID *uuid.UUID, amount float64) (*float64, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
 		return nil, err
 	}
-	user, err := s.userRepository.GetByExternalId(ctx, userId)
+	user, err := s.userRepository.GetByExternalID(ctx, userID)
 	if err != nil {
 		_ = tr.Rollback()
 		return nil, err

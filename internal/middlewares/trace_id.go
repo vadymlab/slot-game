@@ -8,7 +8,9 @@ import (
 	"github.com/vadymlab/slot-game/internal/constants"
 )
 
-const HeaderTraceId = "X-Trace-ID"
+// HeaderTraceID defines the HTTP header used for providing or propagating
+// a trace ID, enabling consistent tracking of requests across services.
+const HeaderTraceID = "X-Trace-ID"
 
 // WithTraceID adds the trace ID to the context for request tracing purposes.
 // This trace ID helps uniquely identify and track a request across services.
@@ -28,7 +30,7 @@ func WithLogger(ctx context.Context, logger log.Logger) context.Context {
 func TraceMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Generate or retrieve the trace ID from the request header.
-		traceID := c.GetHeader(HeaderTraceId)
+		traceID := c.GetHeader(HeaderTraceID)
 		if traceID == "" {
 			traceID = uuid.New().String()
 		}

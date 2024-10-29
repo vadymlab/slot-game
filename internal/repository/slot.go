@@ -43,7 +43,7 @@ func (s slotRepository) AddSpin(ctx context.Context, spin *models.Spin) error {
 // Returns:
 //   - A slice of pointers to Spin model instances representing the user's spin history.
 //   - An error if the transaction or retrieval fails; otherwise, nil.
-func (s slotRepository) GetSpins(ctx context.Context, userId uint) ([]*models.Spin, error) {
+func (s slotRepository) GetSpins(ctx context.Context, userID uint) ([]*models.Spin, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
@@ -51,7 +51,7 @@ func (s slotRepository) GetSpins(ctx context.Context, userId uint) ([]*models.Sp
 	}
 
 	var spins []*models.Spin
-	result := tr.Provider().Model(&models.Spin{}).Where("user_id = ?", userId).Find(&spins)
+	result := tr.Provider().Model(&models.Spin{}).Where("user_id = ?", userID).Find(&spins)
 	if err := result.Error; err != nil {
 		_ = tr.Rollback()
 		return nil, err

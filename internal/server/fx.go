@@ -8,7 +8,7 @@ import "go.uber.org/fx"
 var Module = fx.Module("server",
 
 	// Provides API configuration settings, such as port and middleware options.
-	fx.Provide(GetApiConfig),
+	fx.Provide(GetAPIConfig),
 
 	// Provides a new HTTP engine, typically Gin, for handling HTTP requests and routing.
 	fx.Provide(NewEngine),

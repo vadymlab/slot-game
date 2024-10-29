@@ -41,7 +41,7 @@ type IUserRepository interface {
 	// Returns:
 	//   - A pointer to a User model if found.
 	//   - An error if any issues occur during retrieval.
-	GetByExternalId(ctx context.Context, id *uuid.UUID) (*models.User, error)
+	GetByExternalID(ctx context.Context, id *uuid.UUID) (*models.User, error)
 
 	// GetById retrieves a user by their numeric ID.
 	//
@@ -52,7 +52,7 @@ type IUserRepository interface {
 	// Returns:
 	//   - A pointer to a User model if found.
 	//   - An error if any issues occur during retrieval.
-	GetById(ctx context.Context, id uint) (*models.User, error)
+	GetByID(ctx context.Context, id uint) (*models.User, error)
 
 	// Deposit increases the balance of a specified user by the given amount.
 	//
@@ -64,7 +64,7 @@ type IUserRepository interface {
 	// Returns:
 	//   - A pointer to the updated balance as a float64.
 	//   - An error if any issues occur during the deposit.
-	Deposit(ctx context.Context, userId uint, amount float64) (*float64, error)
+	Deposit(ctx context.Context, userID uint, amount float64) (*float64, error)
 
 	// Withdraw decreases the balance of a specified user by the given amount.
 	//
@@ -76,7 +76,7 @@ type IUserRepository interface {
 	// Returns:
 	//   - A pointer to the updated balance as a float64.
 	//   - An error if any issues occur during the withdrawal.
-	Withdraw(ctx context.Context, userId uint, amount float64) (*float64, error)
+	Withdraw(ctx context.Context, userID uint, amount float64) (*float64, error)
 }
 
 // IWalletRepository defines methods for wallet-related data operations in the repository layer.
@@ -90,7 +90,7 @@ type IWalletRepository interface {
 	// Returns:
 	//   - The user's balance as a float64.
 	//   - An error if any issues occur during retrieval.
-	GetBalance(ctx context.Context, userId uint) (float64, error)
+	GetBalance(ctx context.Context, userID uint) (float64, error)
 }
 
 // ISlotRepository defines methods for slot game data operations in the repository layer.
@@ -114,5 +114,5 @@ type ISlotRepository interface {
 	// Returns:
 	//   - A slice of pointers to Spin models representing the user's spin history.
 	//   - An error if any issues occur during retrieval.
-	GetSpins(ctx context.Context, userId uint) ([]*models.Spin, error)
+	GetSpins(ctx context.Context, userID uint) ([]*models.Spin, error)
 }

@@ -38,10 +38,10 @@ func GetUserFromContext(ctx *gin.Context) *uuid.UUID {
 		return nil
 	}
 
-	uUid, err := uuid.Parse(userID)
+	uUID, err := uuid.Parse(userID)
 	if err != nil {
 		server.InternalErrorResponse(ctx, err.Error())
 		return nil
 	}
-	return &uUid
+	return &uUID
 }

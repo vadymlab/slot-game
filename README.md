@@ -1,8 +1,5 @@
-[![Lint and Format](https://github.com/vadymlab/slot-game/actions/workflows/lint.yml/badge.svg)](https://github.com/vadymlab/slot-game/actions/workflows/lint.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/vadymlab/slot-game)](https://goreportcard.com/report/github.com/vadymlab/slot-game)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 # Project Name
+
 [Project Structure](STRUCTURE.md)
 
 **Project Description:** This project is a simple slot game application.
@@ -90,7 +87,11 @@ To populate the database with the necessary schema, you need to apply migrations
 
 ## 4. Running the Application
 
-The application can be run in two main ways, depending on your environment:
+The application can be run in two main ways, depending on your environment.
+
+### 4.0 Game Rules and Limits
+- **Spin Rate Limiting**: By default, users are allowed to perform one spin per second.
+- **Spin Retry Logic**: If a user does not have sufficient funds during a spin (e.g., a deposit transaction has not yet been processed), the spin will be retried for up to 2 seconds, with retries occurring every 500 milliseconds.
 
 ### 4.1 Running Locally
 If you want to run the application locally (e.g., for development):
@@ -148,4 +149,9 @@ The application has Swagger documentation available at: [http://localhost:8000/s
 ## 6. Postman Collection
 
 You can use the following Postman collection for testing the API endpoints: [Slot Game Postman Collection](https://orange-meadow-363583.postman.co/workspace/SlotGames~d32ea593-fda8-40c2-a8fd-210ce73e7b6a/collection/4620563-bc182869-439e-463d-993a-3772a9737bbe?action=share&creator=4620563).
+
+## 7. Game Rules and Limits
+
+- **Spin Rate Limiting**: By default, users are allowed to perform one spin per second.
+- **Spin Retry Logic**: If a user does not have sufficient funds during a spin (e.g., a deposit transaction has not yet been processed), the spin will be retried for up to 2 seconds, with retries occurring every 500 milliseconds.
 

@@ -23,7 +23,7 @@ var Module = fx.Options(
 //   - (*libredis.Client): The initialized Redis client instance.
 //   - (error): An error if URL parsing or client creation fails.
 func NewRedisClient(cfg *Config) (*libredis.Client, error) {
-	option, err := libredis.ParseURL(cfg.Url)
+	option, err := libredis.ParseURL(cfg.URL)
 	if err != nil {
 		return nil, err
 	}

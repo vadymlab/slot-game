@@ -17,7 +17,7 @@ import (
 func main() {
 	// Initialize the CLI application with flags merged from config, database, and server packages.
 	app := &cli.App{
-		Flags:  utils.MergeSlices(config.LogFlags, database.DatabaseFlags, server.ApiFlags, config.SlotFlags, redis.Flags),
+		Flags:  utils.MergeSlices(config.LogFlags, database.DatabaseFlags, server.APIFlags, config.SlotFlags, redis.Flags),
 		Action: app2.RunServer,
 	}
 

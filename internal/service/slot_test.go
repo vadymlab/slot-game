@@ -36,19 +36,19 @@ func TestRetrySpin_Success(t *testing.T) {
 
 	s := NewSlotService(slotConfig, mockUserService, mockSlotRepo)
 
-	userId := uuid.New()
+	userID := uuid.New()
 	betAmount := 10.0
 
-	mockUserService.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+	mockUserService.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 		Model: gorm.Model{
 			ID: 1,
 		}, Balance: 100,
 	}, nil)
-	mockUserService.EXPECT().Withdraw(gomock.Any(), &userId, gomock.Any()).Return(nil, nil)
-	mockUserService.EXPECT().Deposit(gomock.Any(), &userId, gomock.Any()).Return(nil, nil)
+	mockUserService.EXPECT().Withdraw(gomock.Any(), &userID, gomock.Any()).Return(nil, nil)
+	mockUserService.EXPECT().Deposit(gomock.Any(), &userID, gomock.Any()).Return(nil, nil)
 	mockSlotRepo.EXPECT().AddSpin(gomock.Any(), gomock.Any()).Return(nil)
 
-	spin, err := s.RetrySpin(ctx, &userId, betAmount)
+	spin, err := s.RetrySpin(ctx, &userID, betAmount)
 	assert.NoError(t, err)
 	assert.NotNil(t, spin)
 }
@@ -63,7 +63,7 @@ func TestRetrySpin_VariousConfigs(t *testing.T) {
 	mockTransactionContext := postgres.NewMockITransactionContext(ctrl)
 
 	// Test data
-	userId := uuid.New()
+	userID := uuid.New()
 	betAmount := 10.0
 
 	// Define test cases with various configurations
@@ -103,19 +103,19 @@ func TestRetrySpin_VariousConfigs(t *testing.T) {
 			s := NewSlotService(slotConfig, mockUserService, mockSlotRepo)
 
 			// Expectations for user service and slot repository
-			mockUserService.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+			mockUserService.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 				Model: gorm.Model{ID: 1}, Balance: 100,
 			}, nil).Times(1)
-			mockUserService.EXPECT().Withdraw(ctx, &userId, betAmount).Return(nil, nil).Times(1)
+			mockUserService.EXPECT().Withdraw(ctx, &userID, betAmount).Return(nil, nil).Times(1)
 
 			// If expected win amount is greater than zero, expect a deposit
 			if tc.expectedWin > 0 {
-				mockUserService.EXPECT().Deposit(ctx, &userId, tc.expectedWin).Return(nil, nil).Times(1)
+				mockUserService.EXPECT().Deposit(ctx, &userID, tc.expectedWin).Return(nil, nil).Times(1)
 			}
 			mockSlotRepo.EXPECT().AddSpin(ctx, gomock.Any()).Return(nil).Times(1)
 
 			// Execute RetrySpin
-			spin, err := s.RetrySpin(ctx, &userId, betAmount)
+			spin, err := s.RetrySpin(ctx, &userID, betAmount)
 
 			// Assertions
 			assert.NoError(t, err)
@@ -148,20 +148,20 @@ func TestRetrySpin_TemporaryError_RetrySuccess(t *testing.T) {
 	}
 	s := NewSlotService(slotConfig, mockUserService, mockSlotRepo)
 
-	userId := uuid.New()
+	userID := uuid.New()
 	betAmount := 10.0
 
 	// Expectations for the user and repository services
-	mockUserService.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+	mockUserService.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 		Model: gorm.Model{ID: 1}, Balance: 100,
 	}, nil).Times(3) // Expecting this call three times due to retries
-	mockUserService.EXPECT().Withdraw(ctx, &userId, betAmount).Return(nil, error2.ErrInsufficientFunds).Times(2)
-	mockUserService.EXPECT().Withdraw(ctx, &userId, betAmount).Return(nil, nil).Times(1)
-	mockUserService.EXPECT().Deposit(ctx, &userId, gomock.Any()).Return(nil, nil).Times(1)
+	mockUserService.EXPECT().Withdraw(ctx, &userID, betAmount).Return(nil, error2.ErrInsufficientFunds).Times(2)
+	mockUserService.EXPECT().Withdraw(ctx, &userID, betAmount).Return(nil, nil).Times(1)
+	mockUserService.EXPECT().Deposit(ctx, &userID, gomock.Any()).Return(nil, nil).Times(1)
 	mockSlotRepo.EXPECT().AddSpin(ctx, gomock.Any()).Return(nil).Times(1)
 
 	// Execute RetrySpin
-	spin, err := s.RetrySpin(ctx, &userId, betAmount)
+	spin, err := s.RetrySpin(ctx, &userID, betAmount)
 
 	// Assertions to verify retry behavior and results
 	assert.NoError(t, err)

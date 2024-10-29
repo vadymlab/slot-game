@@ -8,7 +8,7 @@ import (
 // Constants for log configuration parameters.
 const (
 	loLevel = "log-level" // Log level setting for the application
-	logJson = "log-json"  // Determines if logs should be in JSON format
+	logJSON = "log-json"  // Determines if logs should be in JSON format
 )
 
 // GetLogConfig returns a configuration for logging based on CLI flags or environment variables.
@@ -16,7 +16,7 @@ const (
 func GetLogConfig(c *cli.Context) *log.Config {
 	conf := &log.Config{
 		Level:  c.String(loLevel),
-		IsJson: c.Bool(logJson),
+		IsJson: c.Bool(logJSON),
 	}
 	return conf
 }
@@ -31,7 +31,7 @@ var LogFlags = []cli.Flag{
 		EnvVars: []string{"LOG_LEVEL"},
 	},
 	&cli.BoolFlag{
-		Name:    logJson,
+		Name:    logJSON,
 		Value:   false,
 		Usage:   "Enable JSON format for logs. Defaults to false.",
 		EnvVars: []string{"LOG_JSON"},

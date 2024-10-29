@@ -51,10 +51,10 @@ func (mr *MockIUserServiceMockRecorder) Deposit(ctx, userId, amount interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deposit", reflect.TypeOf((*MockIUserService)(nil).Deposit), ctx, userId, amount)
 }
 
-// GetByExternalId mocks base method.
-func (m *MockIUserService) GetByExternalId(ctx context.Context, id *uuid.UUID) (*models.User, error) {
+// GetByExternalID mocks base method.
+func (m *MockIUserService) GetByExternalID(ctx context.Context, id *uuid.UUID) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByExternalId", ctx, id)
+	ret := m.ctrl.Call(m, "GetByExternalID", ctx, id)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -63,13 +63,13 @@ func (m *MockIUserService) GetByExternalId(ctx context.Context, id *uuid.UUID) (
 // GetByExternalId indicates an expected call of GetByExternalId.
 func (mr *MockIUserServiceMockRecorder) GetByExternalId(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByExternalId", reflect.TypeOf((*MockIUserService)(nil).GetByExternalId), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByExternalID", reflect.TypeOf((*MockIUserService)(nil).GetByExternalID), ctx, id)
 }
 
-// GetById mocks base method.
-func (m *MockIUserService) GetById(ctx context.Context, id uint) (*models.User, error) {
+// GetByID mocks base method.
+func (m *MockIUserService) GetByID(ctx context.Context, id uint) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetById", ctx, id)
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -78,7 +78,7 @@ func (m *MockIUserService) GetById(ctx context.Context, id uint) (*models.User, 
 // GetById indicates an expected call of GetById.
 func (mr *MockIUserServiceMockRecorder) GetById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockIUserService)(nil).GetById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIUserService)(nil).GetByID), ctx, id)
 }
 
 // Login mocks base method.

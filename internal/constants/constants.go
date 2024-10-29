@@ -1,5 +1,7 @@
 package constants
 
+// CtxKey is a custom type for defining context keys, ensuring
+// strong typing and preventing collisions with other context values.
 type CtxKey string
 
 // CtxFieldTraceID is the context key for storing the trace ID,

@@ -37,13 +37,13 @@ type slotService struct {
 // Returns:
 //   - A slice of pointers to Spin models representing the user's spin history.
 //   - An error if the transaction or retrieval fails; otherwise, nil.
-func (s *slotService) History(ctx context.Context, userId *uuid.UUID) ([]*models.Spin, error) {
+func (s *slotService) History(ctx context.Context, userID *uuid.UUID) ([]*models.Spin, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
 		return nil, err
 	}
-	user, err := s.userService.GetByExternalId(ctx, userId)
+	user, err := s.userService.GetByExternalID(ctx, userID)
 	if err != nil {
 		_ = tr.Rollback()
 		return nil, err
@@ -89,11 +89,11 @@ func (s *slotService) History(ctx context.Context, userId *uuid.UUID) ([]*models
 //	    // Handle error
 //	}
 //	// Process spin result
-func (s *slotService) RetrySpin(ctx context.Context, userId *uuid.UUID, betAmount float64) (*models.Spin, error) {
+func (s *slotService) RetrySpin(ctx context.Context, userID *uuid.UUID, betAmount float64) (*models.Spin, error) {
 	var spin *models.Spin
 	operation := func() error {
 		var err error
-		spin, err = s.spin(ctx, userId, betAmount)
+		spin, err = s.spin(ctx, userID, betAmount)
 		if err != nil {
 			if errors.Is(err, error2.ErrInsufficientFunds) {
 				log.FromContext(ctx).Warnf("RetrySpin encountered error: %v", err)
@@ -126,18 +126,18 @@ func (s *slotService) RetrySpin(ctx context.Context, userId *uuid.UUID, betAmoun
 // Returns:
 //   - A pointer to a spin model representing the spin result.
 //   - An error if the spin process or transaction fails; otherwise, nil.
-func (s *slotService) spin(ctx context.Context, userId *uuid.UUID, betAmount float64) (*models.Spin, error) {
+func (s *slotService) spin(ctx context.Context, userID *uuid.UUID, betAmount float64) (*models.Spin, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
 		return nil, err
 	}
-	user, err := s.userService.GetByExternalId(ctx, userId)
+	user, err := s.userService.GetByExternalID(ctx, userID)
 	if err != nil {
 		_ = tr.Rollback()
 		return nil, err
 	}
-	_, err = s.userService.Withdraw(ctx, userId, betAmount)
+	_, err = s.userService.Withdraw(ctx, userID, betAmount)
 	if err != nil {
 		_ = tr.Rollback()
 		return nil, err
@@ -145,7 +145,7 @@ func (s *slotService) spin(ctx context.Context, userId *uuid.UUID, betAmount flo
 
 	payout := s.calculatePayout(betAmount)
 	if payout > 0 {
-		_, err = s.userService.Deposit(ctx, userId, payout)
+		_, err = s.userService.Deposit(ctx, userID, payout)
 		if err != nil {
 			_ = tr.Rollback()
 			return nil, err
@@ -224,7 +224,7 @@ func NewSlotService(
 		userService:    userService,
 		slotRepository: slotRepository,
 		backoff: backoff.NewExponentialBackOff(
-			backoff.WithInitialInterval(50*time.Millisecond),
+			backoff.WithInitialInterval(500*time.Millisecond),
 			backoff.WithMaxElapsedTime(2*time.Second),
 			backoff.WithMultiplier(1.5),
 		),

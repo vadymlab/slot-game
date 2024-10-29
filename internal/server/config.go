@@ -16,10 +16,10 @@ const (
 	logRequest         = "server-log-request"         // Flag to enable or disable request logging
 )
 
-// ApiConfig holds configuration settings for the API server.
-type ApiConfig struct {
-	ApiHost           string // Server host address
-	ApiPort           string // Server port number
+// APIConfig holds configuration settings for the API server.
+type APIConfig struct {
+	APIHost           string // Server host address
+	APIPort           string // Server port number
 	RequestTimeout    int    // Maximum request read duration in seconds
 	ResponseTimeout   int    // Maximum response write duration in seconds
 	MaxHeaderBytes    int    // Maximum size of request headers in bytes
@@ -28,8 +28,8 @@ type ApiConfig struct {
 	LogRequest        bool   // Enable request logging
 }
 
-// GetApiConfig retrieves API server configuration from CLI flags or environment variables
-// and initializes an ApiConfig instance with these settings.
+// GetAPIConfig retrieves API server configuration from CLI flags or environment variables
+// and initializes an APIConfig instance with these settings.
 //
 // Parameters:
 //   - c: The CLI context containing parsed command-line arguments and environment variables.
@@ -37,10 +37,10 @@ type ApiConfig struct {
 // Returns:
 //
 //	A pointer to an ApiConfig instance populated with the specified configuration.
-func GetApiConfig(c *cli.Context) *ApiConfig {
-	return &ApiConfig{
-		ApiHost:           c.String(apiHost),
-		ApiPort:           c.String(apiPort),
+func GetAPIConfig(c *cli.Context) *APIConfig {
+	return &APIConfig{
+		APIHost:           c.String(apiHost),
+		APIPort:           c.String(apiPort),
 		RequestTimeout:    c.Int(apiRequestTimeout),
 		ResponseTimeout:   c.Int(apiResponseTimeout),
 		MaxHeaderBytes:    c.Int(apiMaxHeaderSize),
@@ -50,9 +50,9 @@ func GetApiConfig(c *cli.Context) *ApiConfig {
 	}
 }
 
-// ApiFlags defines a slice of CLI flags for configuring API server settings.
+// APIFlags defines a slice of CLI flags for configuring API server settings.
 // These flags allow customization of server parameters through command-line arguments or environment variables.
-var ApiFlags = []cli.Flag{
+var APIFlags = []cli.Flag{
 	&cli.StringFlag{
 		Name:    apiHost,
 		Value:   "0.0.0.0",

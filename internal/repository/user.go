@@ -14,7 +14,7 @@ import (
 // and managing user-related data in the database.
 type userRepository struct{}
 
-// GetById retrieves a user by their numeric ID.
+// GetByID retrieves a user by their numeric ID.
 //
 // Parameters:
 //   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -23,7 +23,7 @@ type userRepository struct{}
 // Returns:
 //   - A pointer to a User model if found, or nil if not found.
 //   - An error if the retrieval fails.
-func (r *userRepository) GetById(ctx context.Context, uid uint) (*models.User, error) {
+func (r *userRepository) GetByID(ctx context.Context, uid uint) (*models.User, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
@@ -42,7 +42,7 @@ func (r *userRepository) GetById(ctx context.Context, uid uint) (*models.User, e
 	return user, tr.Commit(id)
 }
 
-// GetByExternalId retrieves a user by their UUID identifier.
+// GetByExternalID retrieves a user by their UUID identifier.
 //
 // Parameters:
 //   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -51,7 +51,7 @@ func (r *userRepository) GetById(ctx context.Context, uid uint) (*models.User, e
 // Returns:
 //   - A pointer to a User model if found, or nil if not found.
 //   - An error if the retrieval fails.
-func (r *userRepository) GetByExternalId(ctx context.Context, userId *uuid.UUID) (*models.User, error) {
+func (r *userRepository) GetByExternalID(ctx context.Context, userID *uuid.UUID) (*models.User, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
@@ -59,7 +59,7 @@ func (r *userRepository) GetByExternalId(ctx context.Context, userId *uuid.UUID)
 	}
 
 	user := &models.User{}
-	result := tr.Provider().Model(&models.User{}).Where("external_id = ?", userId).First(user)
+	result := tr.Provider().Model(&models.User{}).Where("external_id = ?", userID).First(user)
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -132,8 +132,8 @@ func (r *userRepository) GetByLogin(ctx context.Context, login string) (*models.
 // Returns:
 //   - A pointer to the updated balance as a float64.
 //   - An error if the update fails.
-func (r *userRepository) Deposit(ctx context.Context, userId uint, amount float64) (*float64, error) {
-	return r.updateBalance(ctx, userId, amount)
+func (r *userRepository) Deposit(ctx context.Context, userID uint, amount float64) (*float64, error) {
+	return r.updateBalance(ctx, userID, amount)
 }
 
 // Withdraw decreases the balance of a specified user.
@@ -146,8 +146,8 @@ func (r *userRepository) Deposit(ctx context.Context, userId uint, amount float6
 // Returns:
 //   - A pointer to the updated balance as a float64.
 //   - An error if the update fails.
-func (r *userRepository) Withdraw(ctx context.Context, userId uint, amount float64) (*float64, error) {
-	return r.updateBalance(ctx, userId, -amount)
+func (r *userRepository) Withdraw(ctx context.Context, userID uint, amount float64) (*float64, error) {
+	return r.updateBalance(ctx, userID, -amount)
 }
 
 // updateBalance modifies the balance of a specified user by the given amount.
@@ -160,7 +160,7 @@ func (r *userRepository) Withdraw(ctx context.Context, userId uint, amount float
 // Returns:
 //   - A pointer to the updated balance as a float64.
 //   - An error if the update fails.
-func (r *userRepository) updateBalance(ctx context.Context, userId uint, amount float64) (*float64, error) {
+func (r *userRepository) updateBalance(ctx context.Context, userID uint, amount float64) (*float64, error) {
 	tr, _ := postgres.GetTransactionContext(ctx)
 	id, err := tr.Begin()
 	if err != nil {
@@ -168,7 +168,7 @@ func (r *userRepository) updateBalance(ctx context.Context, userId uint, amount 
 	}
 
 	user := &models.User{}
-	result := tr.Provider().Model(user).Where("id = ?", userId).First(user)
+	result := tr.Provider().Model(user).Where("id = ?", userID).First(user)
 	if err := result.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			_ = tr.Rollback()
@@ -178,7 +178,7 @@ func (r *userRepository) updateBalance(ctx context.Context, userId uint, amount 
 	user.Balance += amount
 
 	result = tr.Provider().Model(&user).
-		Where("id = ?", userId).
+		Where("id = ?", userID).
 		Update("balance", user.Balance).
 		Select("balance").
 		Scan(&user)

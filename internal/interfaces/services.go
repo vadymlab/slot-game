@@ -33,7 +33,7 @@ type IUserService interface {
 	//   - An error if registration fails or an issue occurs.
 	Register(ctx context.Context, login, password string) (*models.User, error)
 
-	// GetByExternalId retrieves a user by their UUID identifier.
+	// GetByExternalID retrieves a user by their UUID identifier.
 	//
 	// Parameters:
 	//   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -42,9 +42,9 @@ type IUserService interface {
 	// Returns:
 	//   - A pointer to a User model if found.
 	//   - An error if the user is not found or if any issues occur.
-	GetByExternalId(ctx context.Context, id *uuid.UUID) (*models.User, error)
+	GetByExternalID(ctx context.Context, id *uuid.UUID) (*models.User, error)
 
-	// GetById retrieves a user by their numeric ID.
+	// GetByID retrieves a user by their numeric ID.
 	//
 	// Parameters:
 	//   - ctx: Context for managing request-scoped values and cancellation signals.
@@ -53,19 +53,19 @@ type IUserService interface {
 	// Returns:
 	//   - A pointer to a User model if found.
 	//   - An error if the user is not found or if any issues occur.
-	GetById(ctx context.Context, id uint) (*models.User, error)
+	GetByID(ctx context.Context, id uint) (*models.User, error)
 
 	// Deposit adds a specified amount to the balance of a user identified by their UUID.
 	//
 	// Parameters:
 	//   - ctx: Context for managing request-scoped values and cancellation signals.
-	//   - userId: A UUID representing the user's external identifier.
+	//   - userID: A UUID representing the user's external identifier.
 	//   - amount: The amount to be deposited to the user's balance.
 	//
 	// Returns:
 	//   - A pointer to the updated balance as a float64.
 	//   - An error if the deposit fails or any issues occur.
-	Deposit(ctx context.Context, userId *uuid.UUID, amount float64) (*float64, error)
+	Deposit(ctx context.Context, userID *uuid.UUID, amount float64) (*float64, error)
 
 	// Withdraw deducts a specified amount from the balance of a user identified by their UUID.
 	//
@@ -77,22 +77,22 @@ type IUserService interface {
 	// Returns:
 	//   - A pointer to the updated balance as a float64.
 	//   - An error if the withdrawal fails or any issues occur.
-	Withdraw(ctx context.Context, userId *uuid.UUID, amount float64) (*float64, error)
+	Withdraw(ctx context.Context, userID *uuid.UUID, amount float64) (*float64, error)
 }
 
 // ISlotService defines service-level methods for handling slot game actions,
 // including spinning and retrieving a user's spin history.
 type ISlotService interface {
-	RetrySpin(ctx context.Context, userId *uuid.UUID, betAmount float64) (*models.Spin, error)
+	RetrySpin(ctx context.Context, userID *uuid.UUID, betAmount float64) (*models.Spin, error)
 
 	// History retrieves the spin history for a specified user.
 	//
 	// Parameters:
 	//   - ctx: Context for managing request-scoped values and cancellation signals.
-	//   - userId: A UUID representing the user's external identifier.
+	//   - userID: A UUID representing the user's external identifier.
 	//
 	// Returns:
 	//   - A slice of pointers to spin models representing the user's spin history.
 	//   - An error if retrieval fails or any issues occur.
-	History(ctx context.Context, userId *uuid.UUID) ([]*models.Spin, error)
+	History(ctx context.Context, userID *uuid.UUID) ([]*models.Spin, error)
 }

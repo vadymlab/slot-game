@@ -17,7 +17,7 @@ import (
 // It connects to userService for core user operations and uses JWT authentication for protected routes.
 type UserController struct {
 	userService interfaces.IUserService // Service for managing user-related operations
-	config      *server.ApiConfig       // API configuration with JWT settings
+	config      *server.APIConfig       // API configuration with JWT settings
 }
 
 // NewUserController creates a new instance of UserController with the given userService and config.
@@ -29,7 +29,7 @@ type UserController struct {
 // Returns:
 //
 //	A pointer to UserController.
-func NewUserController(userService interfaces.IUserService, config *server.ApiConfig) *UserController {
+func NewUserController(userService interfaces.IUserService, config *server.APIConfig) *UserController {
 	return &UserController{
 		userService: userService,
 		config:      config,
@@ -152,8 +152,8 @@ func (c *UserController) login(ctx *gin.Context) {
 // @Security BearerAuth
 // @Router /api/profile [get]
 func (c *UserController) profile(ctx *gin.Context) {
-	userId := GetUserFromContext(ctx)
-	user, err := c.userService.GetByExternalId(ctx.Request.Context(), userId)
+	uUID := GetUserFromContext(ctx)
+	user, err := c.userService.GetByExternalID(ctx.Request.Context(), uUID)
 	if err != nil {
 		server.InternalErrorResponse(ctx, err.Error())
 		return

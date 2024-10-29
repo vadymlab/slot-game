@@ -20,7 +20,7 @@ import (
 // and retrieving user spin history. It connects to slotService for core operations
 // and applies JWT authentication for protected routes.
 type SlotController struct {
-	config      *server.ApiConfig       // API configuration, including JWT settings
+	config      *server.APIConfig       // API configuration, including JWT settings
 	slotService interfaces.ISlotService // Service interface for slot game operations
 	appConfig   *config.SlotConfig
 	redisClient *libredis.Client
@@ -36,7 +36,7 @@ type SlotController struct {
 // Returns:
 //
 //	A pointer to a SlotController instance.
-func NewSlotController(config *server.ApiConfig, appConfig *config.SlotConfig, redisClient *libredis.Client, slotService interfaces.ISlotService) *SlotController {
+func NewSlotController(config *server.APIConfig, appConfig *config.SlotConfig, redisClient *libredis.Client, slotService interfaces.ISlotService) *SlotController {
 	return &SlotController{
 		config:      config,
 		slotService: slotService,
@@ -95,8 +95,8 @@ func (c *SlotController) spin(ctx *gin.Context) {
 		server.ErrorsBadRequest(ctx, errs)
 		return
 	}
-	userId := GetUserFromContext(ctx)
-	bit, err := c.slotService.RetrySpin(ctx.Request.Context(), userId, req.BetAmount)
+	userID := GetUserFromContext(ctx)
+	bit, err := c.slotService.RetrySpin(ctx.Request.Context(), userID, req.BetAmount)
 	if err != nil {
 		if errors.Is(err, serviceError.ErrInsufficientFunds) {
 			server.ErrorBadRequest(ctx, err)
@@ -122,8 +122,8 @@ func (c *SlotController) spin(ctx *gin.Context) {
 // @Security BearerAuth
 // @Router /api/slot/history [post]
 func (c *SlotController) history(ctx *gin.Context) {
-	userId := GetUserFromContext(ctx)
-	history, err := c.slotService.History(ctx.Request.Context(), userId)
+	userID := GetUserFromContext(ctx)
+	history, err := c.slotService.History(ctx.Request.Context(), userID)
 	if err != nil {
 		server.InternalErrorResponse(ctx, err.Error())
 		return

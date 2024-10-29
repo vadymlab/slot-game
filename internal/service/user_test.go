@@ -32,7 +32,7 @@ func TestGetById_Success(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetById(ctx, userID)
+	user, err := service.GetByID(ctx, userID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -56,7 +56,7 @@ func TestGetById_UserNotFound(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetById(ctx, userID)
+	user, err := service.GetByID(ctx, userID)
 
 	// Assert
 	assert.ErrorIs(t, err, expectedErr)
@@ -80,7 +80,7 @@ func TestGetById_RepositoryError(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetById(ctx, userID)
+	user, err := service.GetByID(ctx, userID)
 
 	// Assert
 	assert.ErrorIs(t, err, expectedErr)
@@ -104,7 +104,7 @@ func TestGetById_EmptyUser(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetById(ctx, userID)
+	user, err := service.GetByID(ctx, userID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -129,7 +129,7 @@ func TestGetByExternalId_Success(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetByExternalId(ctx, &externalID)
+	user, err := service.GetByExternalID(ctx, &externalID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -152,7 +152,7 @@ func TestGetByExternalId_UserNotFound(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetByExternalId(ctx, &externalID)
+	user, err := service.GetByExternalID(ctx, &externalID)
 
 	// Assert
 	assert.ErrorIs(t, err, serviceError.ErrUserNotFound)
@@ -176,7 +176,7 @@ func TestGetByExternalId_RepositoryError(t *testing.T) {
 	service := NewUserService(mockUserRepo)
 
 	// Act
-	user, err := service.GetByExternalId(ctx, &externalID)
+	user, err := service.GetByExternalID(ctx, &externalID)
 
 	// Assert
 	assert.ErrorIs(t, err, expectedError)
@@ -347,13 +347,13 @@ func TestDeposit_Success(t *testing.T) {
 	mockTxContext := postgres.NewMockITransactionContext(ctrl)
 
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 100.0
 	initialBalance := 50.0
 	expectedBalance := initialBalance + amount
 
 	mockTxContext.EXPECT().Begin().Return(uuid.New(), nil)
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 		Model: gorm.Model{ID: 1},
 	}, nil)
 	mockUserRepo.EXPECT().Deposit(ctx, uint(1), amount).Return(&expectedBalance, nil)
@@ -362,7 +362,7 @@ func TestDeposit_Success(t *testing.T) {
 	service := userService{
 		userRepository: mockUserRepo,
 	}
-	balance, err := service.Deposit(ctx, &userId, amount)
+	balance, err := service.Deposit(ctx, &userID, amount)
 
 	assert.NoError(t, err)
 	assert.Equal(t, &expectedBalance, balance)
@@ -376,7 +376,7 @@ func TestDeposit_InvalidAmount(t *testing.T) {
 	mockTxContext := postgres.NewMockITransactionContext(ctrl)
 
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 0.0
 
 	mockTxContext.EXPECT().Begin().Return(uuid.New(), nil)
@@ -385,7 +385,7 @@ func TestDeposit_InvalidAmount(t *testing.T) {
 	service := userService{
 		userRepository: mockUserRepo,
 	}
-	balance, err := service.Deposit(ctx, &userId, amount)
+	balance, err := service.Deposit(ctx, &userID, amount)
 
 	assert.Nil(t, balance)
 	assert.ErrorIs(t, err, serviceError.ErrInvalidAmount)
@@ -399,17 +399,17 @@ func TestDeposit_UserNotFound(t *testing.T) {
 	mockTxContext := postgres.NewMockITransactionContext(ctrl)
 
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 100.0
 
 	mockTxContext.EXPECT().Begin().Return(uuid.New(), nil)
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(nil, serviceError.ErrUserNotFound)
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(nil, serviceError.ErrUserNotFound)
 	mockTxContext.EXPECT().Rollback().Return(nil)
 
 	service := userService{
 		userRepository: mockUserRepo,
 	}
-	balance, err := service.Deposit(ctx, &userId, amount)
+	balance, err := service.Deposit(ctx, &userID, amount)
 
 	assert.Nil(t, balance)
 	assert.ErrorIs(t, err, serviceError.ErrUserNotFound)
@@ -423,11 +423,11 @@ func TestDeposit_DepositError(t *testing.T) {
 	mockTxContext := postgres.NewMockITransactionContext(ctrl)
 
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 100.0
 
 	mockTxContext.EXPECT().Begin().Return(uuid.New(), nil)
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 		Model: gorm.Model{ID: 1},
 	}, nil)
 	mockUserRepo.EXPECT().Deposit(ctx, uint(1), amount).Return(nil, errors.New("deposit error"))
@@ -436,7 +436,7 @@ func TestDeposit_DepositError(t *testing.T) {
 	service := userService{
 		userRepository: mockUserRepo,
 	}
-	balance, err := service.Deposit(ctx, &userId, amount)
+	balance, err := service.Deposit(ctx, &userID, amount)
 
 	assert.Nil(t, balance)
 	assert.EqualError(t, err, "deposit error")
@@ -450,13 +450,13 @@ func TestDeposit_CommitError(t *testing.T) {
 	mockTxContext := postgres.NewMockITransactionContext(ctrl)
 
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 100.0
 	initialBalance := 50.0
 	expectedBalance := initialBalance + amount
 
 	mockTxContext.EXPECT().Begin().Return(uuid.New(), nil)
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(&models.User{
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(&models.User{
 		Model: gorm.Model{ID: 1},
 	}, nil)
 	mockUserRepo.EXPECT().Deposit(ctx, uint(1), amount).Return(&expectedBalance, nil)
@@ -465,7 +465,7 @@ func TestDeposit_CommitError(t *testing.T) {
 	service := userService{
 		userRepository: mockUserRepo,
 	}
-	_, err := service.Deposit(ctx, &userId, amount)
+	_, err := service.Deposit(ctx, &userID, amount)
 
 	assert.EqualError(t, err, "commit error")
 }
@@ -484,7 +484,7 @@ func TestWithdraw_Success(t *testing.T) {
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
 
 	// Test parameters
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 50.0
 	user := &models.User{
 		Model:   gorm.Model{ID: 1},
@@ -493,7 +493,7 @@ func TestWithdraw_Success(t *testing.T) {
 	expectedBalance := user.Balance - amount // Calculate expected balance
 
 	// Set up expectations for repository methods
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(user, nil).Times(1)
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(user, nil).Times(1)
 	mockUserRepo.EXPECT().Withdraw(ctx, user.ID, amount).Return(&expectedBalance, nil).Times(1)
 
 	service := userService{
@@ -501,7 +501,7 @@ func TestWithdraw_Success(t *testing.T) {
 	}
 
 	// Execute Withdraw
-	balance, err := service.Withdraw(ctx, &userId, amount)
+	balance, err := service.Withdraw(ctx, &userID, amount)
 
 	// Assertions
 	assert.NoError(t, err)
@@ -524,7 +524,7 @@ func TestWithdraw_InsufficientFunds(t *testing.T) {
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
 
 	// Test parameters
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 150.0
 	user := &models.User{
 		Model:   gorm.Model{ID: 1},
@@ -532,14 +532,14 @@ func TestWithdraw_InsufficientFunds(t *testing.T) {
 	}
 
 	// Set up expectations for repository methods
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(user, nil)
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(user, nil)
 
 	service := userService{
 		userRepository: mockUserRepo,
 	}
 
 	// Execute the method being tested
-	wallet, err := service.Withdraw(ctx, &userId, amount)
+	wallet, err := service.Withdraw(ctx, &userID, amount)
 
 	// Verify results
 	assert.Nil(t, wallet)
@@ -561,7 +561,7 @@ func TestWithdraw_ErrorInWithdrawRepository(t *testing.T) {
 	ctx := context.WithValue(context.Background(), postgres.TransactionContextKey, mockTxContext)
 
 	// Test parameters
-	userId := uuid.New()
+	userID := uuid.New()
 	amount := 50.0
 	user := &models.User{
 		Model:   gorm.Model{ID: 1},
@@ -570,7 +570,7 @@ func TestWithdraw_ErrorInWithdrawRepository(t *testing.T) {
 
 	// Set up expectations for repository methods
 	expectedError := errors.New("repository error")
-	mockUserRepo.EXPECT().GetByExternalId(ctx, &userId).Return(user, nil)
+	mockUserRepo.EXPECT().GetByExternalId(ctx, &userID).Return(user, nil)
 	mockUserRepo.EXPECT().Withdraw(ctx, user.ID, amount).Return(nil, expectedError)
 
 	service := userService{
@@ -578,7 +578,7 @@ func TestWithdraw_ErrorInWithdrawRepository(t *testing.T) {
 	}
 
 	// Execute the method being tested
-	wallet, err := service.Withdraw(ctx, &userId, amount)
+	wallet, err := service.Withdraw(ctx, &userID, amount)
 
 	// Verify results
 	assert.Nil(t, wallet)

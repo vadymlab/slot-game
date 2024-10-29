@@ -4,13 +4,13 @@ import "github.com/urfave/cli/v2"
 
 // Constants defining the Redis configuration flags.
 const (
-	redisUrl = "redis-url"
+	redisURL = "redis-url"
 )
 
 // Config represents the configuration settings required to connect to the Redis server.
-// It includes a single field, Url, which specifies the Redis connection URL.
+// It includes a single field, URL, which specifies the Redis connection URL.
 type Config struct {
-	Url string // The Redis connection URL
+	URL string // The Redis connection URL
 }
 
 // GetRedisConfig reads the Redis URL from the CLI context, allowing configuration via
@@ -23,7 +23,7 @@ type Config struct {
 //   - (*Config): A Config struct populated with the Redis URL.
 func GetRedisConfig(c *cli.Context) *Config {
 	return &Config{
-		Url: c.String(redisUrl),
+		URL: c.String(redisURL),
 	}
 }
 
@@ -31,7 +31,7 @@ func GetRedisConfig(c *cli.Context) *Config {
 // These flags enable the URL to be set via command-line arguments or environment variables.
 var Flags = []cli.Flag{
 	&cli.StringFlag{
-		Name:    redisUrl,                   // The flag name
+		Name:    redisURL,                   // The flag name
 		Value:   "redis://localhost:6379/0", // Default Redis URL for local connection
 		Usage:   "Redis connection URL",     // Description for usage instructions
 		EnvVars: []string{"REDIS_URL"},      // Environment variable to override the Redis URL

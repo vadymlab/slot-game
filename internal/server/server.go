@@ -11,7 +11,7 @@ import (
 
 // NewEngine creates and configures a new Gin engine instance.
 // It applies middleware, including request logging (if enabled), request recovery, and CORS settings.
-func NewEngine(config *ApiConfig) *gin.Engine {
+func NewEngine(config *APIConfig) *gin.Engine {
 	var router *gin.Engine
 	if config.LogRequest {
 		// Use the default Gin engine with logging and recovery middleware
@@ -45,9 +45,9 @@ func NewEngine(config *ApiConfig) *gin.Engine {
 
 // NewServer creates and configures a new HTTP server with a specified Gin router and API configuration.
 // The server includes settings for address, timeouts, and max header bytes, with a timeout handler for request limits.
-func NewServer(router *gin.Engine, config *ApiConfig) *http.Server {
+func NewServer(router *gin.Engine, config *APIConfig) *http.Server {
 	server := &http.Server{
-		Addr:           config.ApiHost + ":" + config.ApiPort,                                                            // Server address
+		Addr:           config.APIHost + ":" + config.APIPort,                                                            // Server address
 		Handler:        http.TimeoutHandler(router, time.Duration(config.RequestTimeout)*time.Second, "Request timeout"), // Timeout handler
 		MaxHeaderBytes: config.MaxHeaderBytes,                                                                            // Maximum allowed header size
 		ReadTimeout:    time.Duration(config.RequestTimeout) * time.Second,                                               // Timeout for reading request
@@ -55,6 +55,6 @@ func NewServer(router *gin.Engine, config *ApiConfig) *http.Server {
 	}
 
 	// Log server startup details
-	log.FromDefaultContext().Info("Starting server on " + config.ApiHost + ":" + config.ApiPort)
+	log.FromDefaultContext().Info("Starting server on " + config.APIHost + ":" + config.APIPort)
 	return server
 }

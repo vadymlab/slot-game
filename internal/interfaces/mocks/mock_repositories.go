@@ -67,9 +67,9 @@ func (mr *MockIUserRepositoryMockRecorder) Deposit(ctx, userId, amount interface
 }
 
 // GetByExternalId mocks base method.
-func (m *MockIUserRepository) GetByExternalId(ctx context.Context, id *uuid.UUID) (*models.User, error) {
+func (m *MockIUserRepository) GetByExternalID(ctx context.Context, id *uuid.UUID) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByExternalId", ctx, id)
+	ret := m.ctrl.Call(m, "GetByExternalID", ctx, id)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -78,13 +78,13 @@ func (m *MockIUserRepository) GetByExternalId(ctx context.Context, id *uuid.UUID
 // GetByExternalId indicates an expected call of GetByExternalId.
 func (mr *MockIUserRepositoryMockRecorder) GetByExternalId(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByExternalId", reflect.TypeOf((*MockIUserRepository)(nil).GetByExternalId), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByExternalID", reflect.TypeOf((*MockIUserRepository)(nil).GetByExternalID), ctx, id)
 }
 
 // GetById mocks base method.
-func (m *MockIUserRepository) GetById(ctx context.Context, id uint) (*models.User, error) {
+func (m *MockIUserRepository) GetByID(ctx context.Context, id uint) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetById", ctx, id)
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -93,7 +93,7 @@ func (m *MockIUserRepository) GetById(ctx context.Context, id uint) (*models.Use
 // GetById indicates an expected call of GetById.
 func (mr *MockIUserRepositoryMockRecorder) GetById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockIUserRepository)(nil).GetById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIUserRepository)(nil).GetByID), ctx, id)
 }
 
 // GetByLogin mocks base method.

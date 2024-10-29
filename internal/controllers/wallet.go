@@ -15,7 +15,7 @@ import (
 
 // WalletController manages wallet-related operations, including depositing and withdrawing funds.
 type WalletController struct {
-	config      *server.ApiConfig       // API configuration settings, including JWT secret
+	config      *server.APIConfig       // API configuration settings, including JWT secret
 	userService interfaces.IUserService // Service for user-related operations
 }
 
@@ -28,7 +28,7 @@ type WalletController struct {
 // Returns:
 //
 //	A pointer to WalletController.
-func NewWalletController(config *server.ApiConfig, userService interfaces.IUserService) *WalletController {
+func NewWalletController(config *server.APIConfig, userService interfaces.IUserService) *WalletController {
 	return &WalletController{
 		config:      config,
 		userService: userService,
@@ -82,8 +82,8 @@ func (c *WalletController) deposit(ctx *gin.Context) {
 		server.ErrorsBadRequest(ctx, errs)
 		return
 	}
-	userId := GetUserFromContext(ctx)
-	balance, err := c.userService.Deposit(ctx.Request.Context(), userId, req.Amount)
+	userID := GetUserFromContext(ctx)
+	balance, err := c.userService.Deposit(ctx.Request.Context(), userID, req.Amount)
 	if err != nil {
 		if errors.Is(err, error2.ErrInvalidAmount) || errors.Is(err, error2.ErrInsufficientFunds) {
 			server.ErrorBadRequest(ctx, err)
@@ -124,8 +124,8 @@ func (c *WalletController) withdraw(ctx *gin.Context) {
 		server.ErrorsBadRequest(ctx, errs)
 		return
 	}
-	userId := GetUserFromContext(ctx)
-	balance, err := c.userService.Withdraw(ctx.Request.Context(), userId, req.Amount)
+	userID := GetUserFromContext(ctx)
+	balance, err := c.userService.Withdraw(ctx.Request.Context(), userID, req.Amount)
 	if err != nil {
 		server.InternalErrorResponse(ctx, err.Error())
 		return
